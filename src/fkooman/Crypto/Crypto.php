@@ -103,9 +103,15 @@ class Crypto
         );
         $encodedSignatureDataGenerated = Base64Url::encode($signatureData);
 
-        // FIXME: php 5.6 only
-        if (!hash_equals($encodedSignatureDataGenerated, $encodedSignatureData)) {
-            throw new RuntimeException('invalid signture');
+        // PHP >= 5.6.0 has "hash_equals"
+        if (function_exists('hash_equals')) {
+            if (!hash_equals($encodedSignatureDataGenerated, $encodedSignatureData)) {
+                throw new RuntimeException('invalid signture');
+            }
+        } else {
+            if (!$this->timingSafeEquals($encodedSignatureDataGenerated, $encodedSignatureData)) {
+                throw new RuntimeException('invalid signture');
+            }
         }
 
         $dataContainer = json_decode(Base64Url::decode($encodedDataContainer), true);
@@ -124,5 +130,34 @@ class Crypto
         }
 
         return $plainText;
+    }
+
+    /**
+     * A timing safe equals comparison.
+     *
+     * @param string $safe The internal (safe) value to be checked
+     * @param string $user The user submitted (unsafe) value
+     *
+     * @return bool True if the two strings are identical.
+     *
+     * @see http://blog.ircmaxell.com/2014/11/its-all-about-time.html
+     */
+    private function timingSafeEquals($safe, $user)
+    {
+        $safeLen = strlen($safe);
+        $userLen = strlen($user);
+
+        if ($userLen != $safeLen) {
+            return false;
+        }
+
+        $result = 0;
+
+        for ($i = 0; $i < $userLen; ++$i) {
+            $result |= (ord($safe[$i]) ^ ord($user[$i]));
+        }
+
+        // They are only identical strings if $result is exactly 0...
+        return $result === 0;
     }
 }
