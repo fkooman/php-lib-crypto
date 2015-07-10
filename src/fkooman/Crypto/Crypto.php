@@ -55,7 +55,7 @@ class Crypto
         $cipherText = openssl_encrypt(
             $plainText,
             self::CIPHER_METHOD,
-            $this->encryptSecret,
+            hex2bin($this->encryptSecret),
             0,
             $ivData
         );
@@ -120,7 +120,7 @@ class Crypto
         $plainText = openssl_decrypt(
             $dataContainer['c'],
             self::CIPHER_METHOD,
-            $this->encryptSecret,
+            hex2bin($this->encryptSecret),
             0,
             hex2bin($dataContainer['i'])
         );

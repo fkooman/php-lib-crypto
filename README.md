@@ -6,6 +6,13 @@
 
 A simple encryption/decryption library with zero configuration.
 
+# API 
+The API is very simple. The constructor takes two arguments. The encryption
+and signing key. The keys need to be 128 bit or 16 bytes. You can generate them
+for example using `openssl_random_pseudo_bytes(16)`. 
+
+
+
 # Design
 This library allows you to encrypt and decrypt data. The generated cipher text
 is secured using a signature. 
