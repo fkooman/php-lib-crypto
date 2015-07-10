@@ -1,0 +1,57 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "15fd2bfcb103008789e25163991fba3d",
+    "packages": [
+        {
+            "name": "fkooman/base64",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-base64.git",
+                "reference": "48e0869cb05ad8eba6bbc205f31e4509910d038e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-base64/zipball/48e0869cb05ad8eba6bbc205f31e4509910d038e",
+                "reference": "48e0869cb05ad8eba6bbc205f31e4509910d038e",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\Base64\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net"
+                }
+            ],
+            "description": "A base64 encoder and decoder",
+            "time": "2015-07-07 21:32:33"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "ext-hash": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-spl": "*",
+        "php": ">= 5.4"
+    },
+    "platform-dev": []
+}

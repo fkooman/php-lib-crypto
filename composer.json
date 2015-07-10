@@ -1,0 +1,24 @@
+{
+    "authors": [
+        {
+            "email": "fkooman@tuxed.net",
+            "name": "Fran\u00e7ois Kooman"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "fkooman\\Crypto\\": "src/"
+        }
+    },
+    "description": "A simple encryption and decryption library",
+    "license": "Apache-2.0",
+    "name": "fkooman/crypto",
+    "require": {
+        "ext-hash": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-spl": "*",
+        "fkooman/base64": "^1.0",
+        "php": ">= 5.4"
+    }
+}
