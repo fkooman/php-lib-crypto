@@ -40,7 +40,7 @@ class CryptoTest extends PHPUnit_Framework_TestCase
     public function testDecrypt()
     {
         $c = new Crypto('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
-        $cipherText = 'eyJpIjoiYThiMmI3OGMyZTIwMjRhN2I1YTNkNGFkMjIxYTU4MjAiLCJjIjoidHZMOWNKNmRMR3BVNVRcL0JcL0dSMFVRPT0iLCJtIjoiYWVzLTEyOC1jYmMiLCJoIjoic2hhMjU2In0.VsL5D-GHIMiLUqksGjnFw60coqhCZSex47hyMbbFV2w.b3mCkMDCoclvSVN5dIyHc9htW6AIsD4o9z35nYamrts';
+        $cipherText = 'eyJpIjoiMjgxNWJmZDcwZWQ0Y2IyMzgxZTVhZjI2NDdjMTEzYzYiLCJjIjoib1lscDNCbUYybTN3aWZ5OGMzbHhDZz09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.jM0F4_3IJe4hVrj0ApJj6nO0Cou_xUkMBSxcK_3ENqA.3W4GohB-BlGIccWgeW2cQ8FZTlwiY2G0uzMBpXapPZE';
         $this->assertSame(
             'Hello World',
             $c->decrypt($cipherText)
@@ -48,8 +48,8 @@ class CryptoTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(
             array(
-                'i' => 'a8b2b78c2e2024a7b5a3d4ad221a5820',
-                'c' => 'tvL9cJ6dLGpU5T/B/GR0UQ==',
+                'i' => '2815bfd70ed4cb2381e5af2647c113c6',
+                'c' => 'oYlp3BmF2m3wify8c3lxCg==',
                 'm' => 'aes-128-cbc',
                 'h' => 'sha256',
             ),

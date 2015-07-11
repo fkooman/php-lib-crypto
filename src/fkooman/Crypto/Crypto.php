@@ -22,19 +22,29 @@ class Crypto
     public function __construct($encryptionKey, $signingKey)
     {
         if (!is_string($encryptionKey)) {
-            throw new InvalidArgumentException('encryption secret MUST be string');
+            throw new InvalidArgumentException('encryption key MUST be string');
         }
         if (!is_string($signingKey)) {
-            throw new InvalidArgumentException('sign secret MUST be string');
+            throw new InvalidArgumentException('signing key MUST be string');
         }
         if (self::SECRET_MIN_LENGTH > strlen($encryptionKey)) {
-            throw new InvalidArgumentException(sprintf('encryption secret MUST be at least length %d', self::SECRET_MIN_LENGTH));
+            throw new InvalidArgumentException(sprintf('encryption key MUST be at least length %d', self::SECRET_MIN_LENGTH));
         }
         if (self::SECRET_MIN_LENGTH > strlen($signingKey)) {
-            throw new InvalidArgumentException(sprintf('sign secret MUST be at least length %d', self::SECRET_MIN_LENGTH));
+            throw new InvalidArgumentException(sprintf('signing key MUST be at least length %d', self::SECRET_MIN_LENGTH));
         }
         if ($encryptionKey === $signingKey) {
-            throw new InvalidArgumentException('encryption and sign secret MUST NOT be the same');
+            throw new InvalidArgumentException('encryption and signing keys MUST NOT be the same');
+        }
+
+        $encryptionKey = @hex2bin($encryptionKey);
+        if (false === $encryptionKey) {
+            throw new InvalidArgumentException('encryption key MUST be a valid hex string');
+        }
+
+        $signingKey = hex2bin($signingKey);
+        if (false === $signingKey) {
+            throw new InvalidArgumentException('signing key is not a valid hex string');
         }
 
         $this->encryptionKey = $encryptionKey;
@@ -62,7 +72,7 @@ class Crypto
         $cipherText = openssl_encrypt(
             $plainText,
             self::CIPHER_METHOD,
-            hex2bin($this->encryptionKey),
+            $this->encryptionKey,
             0,
             $iv
         );
@@ -77,13 +87,7 @@ class Crypto
 
         $encodedDataContainer = Base64Url::encode(Json::encode($dataContainer));
 
-        // hash
-        $signatureData = hash_hmac(
-            self::HASH_METHOD,
-            $encodedDataContainer,
-            $this->signingKey,
-            true
-        );
+        $signatureData = $this->calculateHmac($encodedDataContainer);
         $encodedSignatureData = Base64Url::encode($signatureData);
 
         return sprintf('%s.%s', $encodedDataContainer, $encodedSignatureData);
@@ -108,13 +112,7 @@ class Crypto
 
         list($encodedDataContainer, $encodedSignatureData) = explode('.', $cipherText);
 
-        // verify the hash
-        $signatureData = hash_hmac(
-            self::HASH_METHOD,
-            $encodedDataContainer,
-            $this->signingKey,
-            true
-        );
+        $signatureData = $this->calculateHmac($encodedDataContainer);
         $encodedSignatureDataGenerated = Base64Url::encode($signatureData);
 
         // PHP >= 5.6.0 has "hash_equals"
@@ -134,7 +132,7 @@ class Crypto
         $plainText = openssl_decrypt(
             $dataContainer['c'],
             self::CIPHER_METHOD,
-            hex2bin($this->encryptionKey),
+            $this->encryptionKey,
             0,
             hex2bin($dataContainer['i'])
         );
@@ -144,6 +142,16 @@ class Crypto
         }
 
         return $plainText;
+    }
+
+    private function calculateHmac($data)
+    {
+        return hash_hmac(
+            self::HASH_METHOD,
+            $data,
+            $this->signingKey,
+            true
+        );
     }
 
     /**
