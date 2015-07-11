@@ -19,9 +19,10 @@
 namespace fkooman\Crypto;
 
 use fkooman\Base64\Base64Url;
+use fkooman\Json\Json;
 use PHPUnit_Framework_TestCase;
 
-class CryptoTest extends PHPUnit_Framework_TestCase
+class SymmetricTest extends PHPUnit_Framework_TestCase
 {
     public function testEncrypt()
     {
@@ -29,7 +30,7 @@ class CryptoTest extends PHPUnit_Framework_TestCase
         $signSecret = bin2hex(openssl_random_pseudo_bytes(16));
         $plainText = 'Hello World!';
 
-        $c = new Crypto($encryptSecret, $signSecret);
+        $c = new Symmetric($encryptSecret, $signSecret);
         $cipherText = $c->encrypt($plainText);
         $this->assertSame(
             $plainText,
@@ -39,7 +40,7 @@ class CryptoTest extends PHPUnit_Framework_TestCase
 
     public function testDecrypt()
     {
-        $c = new Crypto('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
+        $c = new Symmetric('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
         $cipherText = 'eyJpIjoiMjgxNWJmZDcwZWQ0Y2IyMzgxZTVhZjI2NDdjMTEzYzYiLCJjIjoib1lscDNCbUYybTN3aWZ5OGMzbHhDZz09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.jM0F4_3IJe4hVrj0ApJj6nO0Cou_xUkMBSxcK_3ENqA.3W4GohB-BlGIccWgeW2cQ8FZTlwiY2G0uzMBpXapPZE';
         $this->assertSame(
             'Hello World',
@@ -53,7 +54,7 @@ class CryptoTest extends PHPUnit_Framework_TestCase
                 'm' => 'aes-128-cbc',
                 'h' => 'sha256',
             ),
-            json_decode(
+            Json::decode(
                 Base64Url::decode(
                     explode('.', $cipherText)[0]
                 ),
@@ -68,7 +69,7 @@ class CryptoTest extends PHPUnit_Framework_TestCase
      */
     public function testInvalidSignature()
     {
-        $c = new Crypto('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
+        $c = new Symmetric('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
         $cipherText = 'eyJpIjoiMjhkZTAyNzYyMmEzMzUzMjFhYTI1OGFlZDMxMzMxMDQiLCJjIjoidmZ3Y2ZHTituSEV1c0Z6UWpuZ2JyUT09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.b3mCkMDCoclvSVN5dIyHc9htW6AIsD4o9z35nYamrts';
         $c->decrypt($cipherText);
     }
