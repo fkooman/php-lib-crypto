@@ -32,7 +32,7 @@ the encryption and signing different keys MUST be used.
 ## Encryption
 The cipher text consists of the payload and the signature:
 
-    BASE64URL(payload) "." (BASE64URL(signature)
+    BASE64URL(payload) "." BASE64URL(signature)
 
 The payload contains the initialization vector, the name of the used algorithms 
 and the encrypted plaint text. The payload is a BASE64URL encoded JSON string:
