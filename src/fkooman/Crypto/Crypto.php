@@ -3,43 +3,51 @@
 namespace fkooman\Crypto;
 
 use fkooman\Base64\Base64Url;
+use fkooman\Json\Json;
 use InvalidArgumentException;
 use RuntimeException;
 
 class Crypto
 {
     /** @var string */
-    private $encryptSecret;
+    private $encryptionKey;
 
     /** @var string */
-    private $signSecret;
+    private $signingKey;
 
     const CIPHER_METHOD = 'aes-128-cbc';
     const HASH_METHOD = 'sha256';
     const SECRET_MIN_LENGTH = '32';
 
-    public function __construct($encryptSecret, $signSecret)
+    public function __construct($encryptionKey, $signingKey)
     {
-        if (!is_string($encryptSecret)) {
+        if (!is_string($encryptionKey)) {
             throw new InvalidArgumentException('encryption secret MUST be string');
         }
-        if (!is_string($signSecret)) {
+        if (!is_string($signingKey)) {
             throw new InvalidArgumentException('sign secret MUST be string');
         }
-        if (self::SECRET_MIN_LENGTH > strlen($encryptSecret)) {
+        if (self::SECRET_MIN_LENGTH > strlen($encryptionKey)) {
             throw new InvalidArgumentException(sprintf('encryption secret MUST be at least length %d', self::SECRET_MIN_LENGTH));
         }
-        if (self::SECRET_MIN_LENGTH > strlen($signSecret)) {
+        if (self::SECRET_MIN_LENGTH > strlen($signingKey)) {
             throw new InvalidArgumentException(sprintf('sign secret MUST be at least length %d', self::SECRET_MIN_LENGTH));
         }
-        if ($encryptSecret === $signSecret) {
+        if ($encryptionKey === $signingKey) {
             throw new InvalidArgumentException('encryption and sign secret MUST NOT be the same');
         }
 
-        $this->encryptSecret = $encryptSecret;
-        $this->signSecret = $signSecret;
+        $this->encryptionKey = $encryptionKey;
+        $this->signingKey = $signingKey;
     }
 
+    /**
+     * Encrypt the provided string.
+     *
+     * @param string $plainText the plain text to encrypt
+     *
+     * @return the encrypted plain text
+     */
     public function encrypt($plainText)
     {
         if (!is_string($plainText)) {
@@ -47,34 +55,33 @@ class Crypto
         }
 
         // generate an initialization vector
-        $ivData = openssl_random_pseudo_bytes(
+        $iv = openssl_random_pseudo_bytes(
             openssl_cipher_iv_length(self::CIPHER_METHOD)
         );
-
         // encrypt the data
         $cipherText = openssl_encrypt(
             $plainText,
             self::CIPHER_METHOD,
-            hex2bin($this->encryptSecret),
+            hex2bin($this->encryptionKey),
             0,
-            $ivData
+            $iv
         );
 
         // create a container for initialization vector and cipher text
         $dataContainer = array(
-            'i' => bin2hex($ivData),
+            'i' => bin2hex($iv),
             'c' => $cipherText,
             'm' => self::CIPHER_METHOD, // only informative
             'h' => self::HASH_METHOD,   // only informative
         );
 
-        $encodedDataContainer = Base64Url::encode(json_encode($dataContainer));
+        $encodedDataContainer = Base64Url::encode(Json::encode($dataContainer));
 
         // hash
         $signatureData = hash_hmac(
             self::HASH_METHOD,
             $encodedDataContainer,
-            $this->signSecret,
+            $this->signingKey,
             true
         );
         $encodedSignatureData = Base64Url::encode($signatureData);
@@ -82,6 +89,13 @@ class Crypto
         return sprintf('%s.%s', $encodedDataContainer, $encodedSignatureData);
     }
 
+    /**
+     * Decrypt the provided string.
+     *
+     * @param string $cipherText the cipher text to decrypt
+     *
+     * @return the decrypted ciphertext
+     */
     public function decrypt($cipherText)
     {
         if (!is_string($cipherText)) {
@@ -98,7 +112,7 @@ class Crypto
         $signatureData = hash_hmac(
             self::HASH_METHOD,
             $encodedDataContainer,
-            $this->signSecret,
+            $this->signingKey,
             true
         );
         $encodedSignatureDataGenerated = Base64Url::encode($signatureData);
@@ -114,13 +128,13 @@ class Crypto
             }
         }
 
-        $dataContainer = json_decode(Base64Url::decode($encodedDataContainer), true);
+        $dataContainer = Json::decode(Base64Url::decode($encodedDataContainer));
 
         // decrypt
         $plainText = openssl_decrypt(
             $dataContainer['c'],
             self::CIPHER_METHOD,
-            hex2bin($this->encryptSecret),
+            hex2bin($this->encryptionKey),
             0,
             hex2bin($dataContainer['i'])
         );
