@@ -41,34 +41,12 @@ class Symmetric
 
     public function __construct($encryptionKey, $signingKey)
     {
-        $this->encryptionKey = $this->verifyKey('encryption', $encryptionKey);
-        $this->signingKey = $this->verifyKey('signing', $signingKey);
+        $this->encryptionKey = Utils::verifyKey('encryption', $encryptionKey);
+        $this->signingKey = Utils::verifyKey('signing', $signingKey);
 
         if ($this->encryptionKey === $this->signingKey) {
             throw new InvalidArgumentException('encryption and signing keys MUST NOT be the same');
         }
-    }
-
-    public static function verifyKey($keyType, $keyValue)
-    {
-        if (!is_string($keyValue)) {
-            throw new InvalidArgumentException(
-                sprintf('%s key MUST be string', $keyType)
-            );
-        }
-        if (self::SECRET_MIN_LENGTH > strlen($keyValue)) {
-            throw new InvalidArgumentException(
-                sprintf('%s key MUST be at least length %d', $keyType, self::SECRET_MIN_LENGTH)
-            );
-        }
-        $binKey = @hex2bin($keyValue);
-        if (false === $keyValue) {
-            throw new InvalidArgumentException(
-                sprintf('%s key MUST be a valid hex string', $keyType)
-            );
-        }
-
-        return $binKey;
     }
 
     /**
