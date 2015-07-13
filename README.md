@@ -83,11 +83,8 @@ and the encrypted plain text. The payload is a BASE64URL encoded JSON string:
 `m` fields are NEVER used in the decryption process, but only informative.
 
 The signature is calculated over the BASE64URL encoded JSON encoded payload and
-appended with a `.` as separator. A complete example:
-
-    eyJpIjoiNGY0MTkxMTNjMDg4ZmNjYjdjNmYxN2E3YTE5OWY4YWEiLCJjIjoib2dqZFhYUGdYS0FlMDFJTUQwQzhZZz09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.poRFNxkom2iqiUcQ7v88AkKmK_HA_CEsRNOlvpoTXA0
-
-This entire string is needed to decrypt the cipher text.
+appended with a `.` as separator. This entire string is needed to decrypt the 
+cipher text.
 
 ## Decryption
 The decryption process starts by verifying the signature by calculating the
