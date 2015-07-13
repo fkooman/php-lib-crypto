@@ -5,6 +5,16 @@
 A simple symmetric encryption and decryption library using secure hashes with 
 zero configuration.
 
+In the future an asymmetric (public key) class may be added.
+
+# Use Cases
+A number of use cases:
+* safely store data in a (remote) database
+* use it for authorization and access tokens in e.g. an OAuth server requiring
+  no token storage database
+* communicate securely between two parties where keys have already been 
+  exchanged in a secure way out of band
+
 # API
 The API is very simple. The constructor takes two arguments. The encryption
 and signing key. The keys need to be 128 bit or 16 bytes. 
@@ -59,7 +69,7 @@ The cipher text consists of the payload and the signature:
     BASE64URL(payload) "." BASE64URL(signature)
 
 The payload contains the initialization vector, the name of the used algorithms 
-and the encrypted plaint text. The payload is a BASE64URL encoded JSON string:
+and the encrypted plain text. The payload is a BASE64URL encoded JSON string:
 
     {
         "c": "ogjdXXPgXKAe01IMD0C8Yg==",
@@ -82,10 +92,35 @@ This entire string is needed to decrypt the cipher text.
 ## Decryption
 The decryption process starts by verifying the signature by calculating the
 signature over the BASE64URL encoded payload it receives (the part before the 
-`.`). The generated signature is then compared in a constant time against the 
-received signature. If they match the BASE64URL encoded JSON payload is 
-decoded and the `i` (IV) value used to perform the decryption of the `c` field 
-as mentioned in the encryption section.
+`.`). The generated signature is then compared in a timing attack safe way 
+against the received signature. If they match the BASE64URL encoded JSON 
+payload is decoded and the `i` (IV) value used to perform the decryption of 
+the `c` field as mentioned in the encryption section.
+
+## Replay Attacks
+If you want to avoid replay attacks, the IV could be used as a nonce,
+however this is **NOT** recommended as it would break the abstraction.
+
+A better way is to encode a nonce in the actual plain text to be encrypted.
+
+    ...
+
+    $plainText = json_encode(
+        array(
+            'nonce' => '17c349cfdfa52ff5191fac734a84f50b',
+            'uid' => 'john.doe',
+            'display_name' => 'John Doe'
+            'iat' => 1436776121
+        )
+    );
+
+    $s->encrypt($plainText);
+
+    ...
+
+Now your application can keep a list of `nonces` that were used before. If you
+also incorporate an `iat` (issued at) field and define an expiry the list of 
+nonces you need to keep track of can be limited.
 
 ## JWT/JWS/JWE
 The design is loosely based on the JWT, JWS and JWE specifications, but a lot 
