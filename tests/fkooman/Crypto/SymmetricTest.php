@@ -73,4 +73,13 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
         $cipherText = 'eyJpIjoiMjhkZTAyNzYyMmEzMzUzMjFhYTI1OGFlZDMxMzMxMDQiLCJjIjoidmZ3Y2ZHTituSEV1c0Z6UWpuZ2JyUT09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.b3mCkMDCoclvSVN5dIyHc9htW6AIsD4o9z35nYamrts';
         $c->decrypt($cipherText);
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage encryption and signing keys MUST NOT be the same
+     */
+    public function testSameKey()
+    {
+        $c = new Symmetric('bf76d65e841dcb5bb9e45a6e9027393d', 'bf76d65e841dcb5bb9e45a6e9027393d');
+    }
 }
