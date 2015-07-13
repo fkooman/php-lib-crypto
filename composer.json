@@ -15,7 +15,6 @@
     "name": "fkooman/crypto",
     "require": {
         "ext-hash": "*",
-        "ext-json": "*",
         "ext-openssl": "*",
         "ext-spl": "*",
         "fkooman/base64": "^1.0",
