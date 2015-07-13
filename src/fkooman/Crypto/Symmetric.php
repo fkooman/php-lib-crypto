@@ -25,46 +25,50 @@ use RuntimeException;
 
 class Symmetric
 {
+    /** @see https://secure.php.net/manual/en/function.openssl-get-cipher-methods.php */
+    const CIPHER_METHOD = 'aes-128-cbc';
+
+    /* @see https://secure.php.net/hash_algos */
+    const HASH_METHOD = 'sha256';
+
+    const SECRET_MIN_LENGTH = '32';
+
     /** @var string */
     private $encryptionKey;
 
     /** @var string */
     private $signingKey;
 
-    const CIPHER_METHOD = 'aes-128-cbc';
-    const HASH_METHOD = 'sha256';
-    const SECRET_MIN_LENGTH = '32';
-
     public function __construct($encryptionKey, $signingKey)
     {
-        if (!is_string($encryptionKey)) {
-            throw new InvalidArgumentException('encryption key MUST be string');
-        }
-        if (!is_string($signingKey)) {
-            throw new InvalidArgumentException('signing key MUST be string');
-        }
-        if (self::SECRET_MIN_LENGTH > strlen($encryptionKey)) {
-            throw new InvalidArgumentException(sprintf('encryption key MUST be at least length %d', self::SECRET_MIN_LENGTH));
-        }
-        if (self::SECRET_MIN_LENGTH > strlen($signingKey)) {
-            throw new InvalidArgumentException(sprintf('signing key MUST be at least length %d', self::SECRET_MIN_LENGTH));
-        }
-        if ($encryptionKey === $signingKey) {
+        $this->encryptionKey = $this->verifyKey('encryption', $encryptionKey);
+        $this->signingKey = $this->verifyKey('signing', $signingKey);
+
+        if ($this->encryptionKey === $this->signingKey) {
             throw new InvalidArgumentException('encryption and signing keys MUST NOT be the same');
         }
+    }
 
-        $encryptionKey = @hex2bin($encryptionKey);
-        if (false === $encryptionKey) {
-            throw new InvalidArgumentException('encryption key MUST be a valid hex string');
+    public static function verifyKey($keyType, $keyValue)
+    {
+        if (!is_string($keyValue)) {
+            throw new InvalidArgumentException(
+                sprintf('%s key MUST be string', $keyType)
+            );
+        }
+        if (self::SECRET_MIN_LENGTH > strlen($keyValue)) {
+            throw new InvalidArgumentException(
+                sprintf('%s key MUST be at least length %d', $keyType, self::SECRET_MIN_LENGTH)
+            );
+        }
+        $binKey = @hex2bin($keyValue);
+        if (false === $keyValue) {
+            throw new InvalidArgumentException(
+                sprintf('%s key MUST be a valid hex string', $keyType)
+            );
         }
 
-        $signingKey = hex2bin($signingKey);
-        if (false === $signingKey) {
-            throw new InvalidArgumentException('signing key is not a valid hex string');
-        }
-
-        $this->encryptionKey = $encryptionKey;
-        $this->signingKey = $signingKey;
+        return $binKey;
     }
 
     /**
