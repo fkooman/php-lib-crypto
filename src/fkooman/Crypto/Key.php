@@ -18,10 +18,10 @@
 
 namespace fkooman\Crypto;
 
-use InvalidArgumentException;
-use RuntimeException;
 use fkooman\Base64\Base64Url;
 use fkooman\Json\Json;
+use InvalidArgumentException;
+use RuntimeException;
 
 class Key
 {
