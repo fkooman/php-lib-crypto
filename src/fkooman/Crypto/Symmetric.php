@@ -36,6 +36,18 @@ class Symmetric
 
     public function __construct(Key $key)
     {
+        // make sure the requested algorithms are supported
+        if (!in_array(self::CIPHER_METHOD, openssl_get_cipher_methods())) {
+            throw new RuntimeException(
+                sprintf('cipher method "%s" not supported', self::CIPHER_METHOD)
+            );
+        }
+        if (!in_array(self::HASH_METHOD, hash_algos())) {
+            throw new RuntimeException(
+                sprintf('hash method "%s" not supported', self::HASH_METHOD)
+            );
+        }
+
         $this->key = $key;
     }
 
