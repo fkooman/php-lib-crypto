@@ -16,45 +16,35 @@ A number of use cases:
   exchanged in a secure way out of band
 
 # API
-The API is very simple. The constructor takes two arguments. The encryption
-and signing key. The keys need to be 128 bit or 16 bytes. 
+The API is very simple. The constructor takes one argument, the key.
 
-    public function __construct($encryptionKey, $signingKey);
+    public function __construct(Key $key);
     public function encrypt($plainText);
     public function decrypt($cipherText);
 
-The encryption and signing key can be generated using 
-`openssl_random_pseudo_bytes()`. 
+To generate a key:
 
-    echo bin2hex(
-        openssl_random_pseudo_bytes(
-            16
-        )
-    );
+    $key = Key::generate();
+    echo $key . PHP_EOL;
+
+To load a key from string, e.g. from a configuration file:
+
+    $key = Key::load('...');
 
 # Usage
-For example consider the following program:
 
-    use fkooman\Crypto\Symmetric;
+    $key = Key::generate();
+    $s = new Symmetric($key);
 
-    $encryptKey = bin2hex(openssl_random_pseudo_bytes(16));
-    $signingKey = bin2hex(openssl_random_pseudo_bytes(16));
-
-    $s = new Symmetric($encryptKey, $signingKey);
     $cipherText = $s->encrypt('Hello World!');
-
-    echo 'cipherText: ' . $cipherText . PHP_EOL;
+    
+    ...
 
     $plainText = $s->decrypt($cipherText);
 
-    echo 'plainText: ' . $plainText . PHP_EOL;
+    ...
 
-The output would look like this:
-
-    cipherText: eyJpIjoiNDFmOTFiY2NkOTM4ZGU2NTA2Mjc1M2UxZDM3OTEwMDYiLCJjIjoibGpMTmk4aVRcL2hxWDNrNlJcL0NOOVF3PT0iLCJtIjoiYWVzLTEyOC1jYmMiLCJoIjoic2hhMjU2In0.1H38DC0XtlcWsQmhosJSdAj0mNIHQgz7zZu9vd4fSWc
-    plainText: Hello World!
-
-See design for more information on the contents of the cipher text.
+See also the included `example.php` for a full example.
 
 # Design
 This library allows you to encrypt and decrypt data. The generated cipher text

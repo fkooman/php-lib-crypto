@@ -26,11 +26,10 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
 {
     public function testEncrypt()
     {
-        $encryptSecret = bin2hex(openssl_random_pseudo_bytes(16));
-        $signSecret = bin2hex(openssl_random_pseudo_bytes(16));
+        $key = Key::generate();
         $plainText = 'Hello World!';
 
-        $c = new Symmetric($encryptSecret, $signSecret);
+        $c = new Symmetric($key);
         $cipherText = $c->encrypt($plainText);
         $this->assertSame(
             $plainText,
@@ -40,17 +39,19 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
 
     public function testDecrypt()
     {
-        $c = new Symmetric('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
-        $cipherText = 'eyJpIjoiMjgxNWJmZDcwZWQ0Y2IyMzgxZTVhZjI2NDdjMTEzYzYiLCJjIjoib1lscDNCbUYybTN3aWZ5OGMzbHhDZz09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.jM0F4_3IJe4hVrj0ApJj6nO0Cou_xUkMBSxcK_3ENqA.3W4GohB-BlGIccWgeW2cQ8FZTlwiY2G0uzMBpXapPZE';
+        $key = Key::load('eyJlIjoiZmRhMmZjOGQwMWMwZjg0NDFhODNhMzc1ODAzMWExOTkiLCJzIjoiNTNjNWU2MmRjZjZkYjM4YzNhYTgwZmUyMzVmZjY5MTI5NTdhY2YyZjI1M2ZiNTFlMjQ0NjBmZTQ4NzdmMWQ2YiJ9');
+
+        $c = new Symmetric($key);
+        $cipherText = 'eyJpIjoiOGQ4MDdjZTg1OGI0MmVlYmMyYjcyMDc2MmZjNmY1N2YiLCJjIjoiTXNjS0l5NzlINDZYazJoNDRxcG9LUT09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.2oRxIovyTxvExPOgTR2cYxJsUacmm-1wyIO7Izg9gp8.jM0F4_3IJe4hVrj0ApJj6nO0Cou_xUkMBSxcK_3ENqA.3W4GohB-BlGIccWgeW2cQ8FZTlwiY2G0uzMBpXapPZE';
         $this->assertSame(
-            'Hello World',
+            'Hello World!',
             $c->decrypt($cipherText)
         );
 
         $this->assertSame(
             array(
-                'i' => '2815bfd70ed4cb2381e5af2647c113c6',
-                'c' => 'oYlp3BmF2m3wify8c3lxCg==',
+                'i' => '8d807ce858b42eebc2b720762fc6f57f',
+                'c' => 'MscKIy79H46Xk2h44qpoKQ==',
                 'm' => 'aes-128-cbc',
                 'h' => 'sha256',
             ),
@@ -69,17 +70,10 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
      */
     public function testInvalidSignature()
     {
-        $c = new Symmetric('bf76d65e841dcb5bb9e45a6e9027393d', '57d8eb862864f427d02f7364afe52732');
+        $key = Key::load('eyJlIjoiZmRhMmZjOGQwMWMwZjg0NDFhODNhMzc1ODAzMWExOTkiLCJzIjoiNTNjNWU2MmRjZjZkYjM4YzNhYTgwZmUyMzVmZjY5MTI5NTdhY2YyZjI1M2ZiNTFlMjQ0NjBmZTQ4NzdmMWQ2YiJ9');
+
+        $c = new Symmetric($key);
         $cipherText = 'eyJpIjoiMjhkZTAyNzYyMmEzMzUzMjFhYTI1OGFlZDMxMzMxMDQiLCJjIjoidmZ3Y2ZHTituSEV1c0Z6UWpuZ2JyUT09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.b3mCkMDCoclvSVN5dIyHc9htW6AIsD4o9z35nYamrts';
         $c->decrypt($cipherText);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage encryption and signing keys MUST NOT be the same
-     */
-    public function testSameKey()
-    {
-        $c = new Symmetric('bf76d65e841dcb5bb9e45a6e9027393d', 'bf76d65e841dcb5bb9e45a6e9027393d');
     }
 }

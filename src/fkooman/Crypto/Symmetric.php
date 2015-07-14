@@ -31,22 +31,12 @@ class Symmetric
     /* @see https://secure.php.net/hash_algos */
     const HASH_METHOD = 'sha256';
 
-    const SECRET_MIN_LENGTH = '32';
+    /** @var Key */
+    private $key;
 
-    /** @var string */
-    private $encryptionKey;
-
-    /** @var string */
-    private $signingKey;
-
-    public function __construct($encryptionKey, $signingKey)
+    public function __construct(Key $key)
     {
-        $this->encryptionKey = Utils::verifyKey('encryption', $encryptionKey);
-        $this->signingKey = Utils::verifyKey('signing', $signingKey);
-
-        if ($this->encryptionKey === $this->signingKey) {
-            throw new InvalidArgumentException('encryption and signing keys MUST NOT be the same');
-        }
+        $this->key = $key;
     }
 
     /**
@@ -70,7 +60,7 @@ class Symmetric
         $cipherText = openssl_encrypt(
             $plainText,
             self::CIPHER_METHOD,
-            $this->encryptionKey,
+            $this->key->getEncryptKey(),
             0,
             $iv
         );
@@ -123,7 +113,7 @@ class Symmetric
         $plainText = openssl_decrypt(
             $dataContainer['c'],
             self::CIPHER_METHOD,
-            $this->encryptionKey,
+            $this->key->getEncryptKey(),
             0,
             hex2bin($dataContainer['i'])
         );
@@ -140,7 +130,7 @@ class Symmetric
         return hash_hmac(
             self::HASH_METHOD,
             $data,
-            $this->signingKey,
+            $this->key->getSignKey(),
             true
         );
     }

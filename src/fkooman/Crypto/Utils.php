@@ -58,26 +58,4 @@ class Utils
         // They are only identical strings if $result is exactly 0...
         return $result === 0;
     }
-
-    public static function verifyKey($keyType, $keyValue)
-    {
-        if (!is_string($keyValue)) {
-            throw new InvalidArgumentException(
-                sprintf('%s key MUST be string', $keyType)
-            );
-        }
-        if (Symmetric::SECRET_MIN_LENGTH > strlen($keyValue)) {
-            throw new InvalidArgumentException(
-                sprintf('%s key MUST be at least length %d', $keyType, Symmetric::SECRET_MIN_LENGTH)
-            );
-        }
-        $binKey = @hex2bin($keyValue);
-        if (false === $keyValue) {
-            throw new InvalidArgumentException(
-                sprintf('%s key MUST be a valid hex string', $keyType)
-            );
-        }
-
-        return $binKey;
-    }
 }
