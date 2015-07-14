@@ -23,6 +23,11 @@ Requires:   php-openssl
 Requires:   php-spl
 Requires:   php-standard
 
+Requires:   php-composer(fkooman/base64) >= 1.0
+Requires:   php-composer(fkooman/base64) < 2.0
+Requires:   php-composer(fkooman/json) >= 1.0
+Requires:   php-composer(fkooman/json) < 2.0
+
 %description
 A simple symmetric encryption and decryption library using secure hashes with 
 zero configuration.

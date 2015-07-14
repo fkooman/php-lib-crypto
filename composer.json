@@ -18,7 +18,7 @@
         "ext-openssl": "*",
         "ext-spl": "*",
         "fkooman/base64": "^1.0",
-        "fkooman/json": "^0.6.0",
+        "fkooman/json": "^1.0",
         "php": ">= 5.4"
     }
 }
