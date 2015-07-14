@@ -55,8 +55,8 @@ class Key
 
     public static function generate()
     {
-        $encryptKey = bin2hex(openssl_random_pseudo_bytes(16));
-        $signKey = bin2hex(openssl_random_pseudo_bytes(32));
+        $encryptKey = bin2hex(openssl_random_pseudo_bytes(self::ENCRYPT_KEY_BYTE_LENGTH));
+        $signKey = bin2hex(openssl_random_pseudo_bytes(self::SIGN_KEY_BYTE_LENGTH));
 
         return new self($encryptKey, $signKey);
     }
