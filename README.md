@@ -50,8 +50,7 @@ See also the included `example.php` for a full example.
 This library allows you to encrypt and decrypt data. The generated cipher text
 is secured using a signature. 
 
-Currently the `aes-128-cbc` cipher is used together with a `sha256` HMAC. For 
-the encryption and signing different keys MUST be used.
+Currently the `aes-128-cbc` cipher is used together with a `sha256` HMAC.
 
 ## Encryption
 The cipher text consists of the payload and the signature:
@@ -68,13 +67,17 @@ and the encrypted plain text. The payload is a BASE64URL encoded JSON string:
         "m": "aes-128-cbc"
     }
 
-`c` is the BASE64 encoded encrypted plain text, `h` is the used HMAC algorithm,
-`i` is the IV in hex format and `m` is the used encryption cipher. The `h` and
-`m` fields are NEVER used in the decryption process, but only informative.
+* `c` is the BASE64 encoded encrypted plain text;
+* `h` is the used HMAC algorithm,
+* `i` is the IV in hex format
+* `m` is the used encryption cipher. 
+
+The `h` and `m` fields are NEVER used in the decryption process, but only 
+informative.
 
 The signature is calculated over the BASE64URL encoded JSON encoded payload and
 appended with a `.` as separator. This entire string is needed to decrypt the 
-cipher text.
+embedded cipher text.
 
 ## Decryption
 The decryption process starts by verifying the signature by calculating the
