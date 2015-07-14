@@ -1,6 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
+
 use fkooman\Crypto\Symmetric;
 use fkooman\Crypto\Key;
 

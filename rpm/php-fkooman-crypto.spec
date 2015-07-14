@@ -45,7 +45,7 @@ cp -pr src/* ${RPM_BUILD_ROOT}%{_datadir}/php
 %defattr(-,root,root,-)
 %dir %{_datadir}/php/%{composer_vendor}/Crypto
 %{_datadir}/php/%{composer_vendor}/Crypto/*
-%doc README.md CHANGES.md composer.json
+%doc README.md CHANGES.md composer.json example.php
 %license COPYING
 
 %changelog
