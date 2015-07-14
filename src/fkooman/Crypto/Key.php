@@ -67,7 +67,7 @@ class Key
         $cryptoStrong = false;
 
         $key = bin2hex(
-            openssl_random_pseudo_bytes(self::ENCRYPT_KEY_BYTE_LENGTH, $cryptoStrong)
+            openssl_random_pseudo_bytes($keyLength, $cryptoStrong)
         );
         if (false === $cryptoStrong) {
             throw new RuntimeException('unable to generate a cryptographically safe random number');
