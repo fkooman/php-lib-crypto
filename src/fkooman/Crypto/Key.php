@@ -19,6 +19,7 @@
 namespace fkooman\Crypto;
 
 use InvalidArgumentException;
+use RuntimeException;
 use fkooman\Base64\Base64Url;
 use fkooman\Json\Json;
 
@@ -55,10 +56,24 @@ class Key
 
     public static function generate()
     {
-        $encryptKey = bin2hex(openssl_random_pseudo_bytes(self::ENCRYPT_KEY_BYTE_LENGTH));
-        $signKey = bin2hex(openssl_random_pseudo_bytes(self::SIGN_KEY_BYTE_LENGTH));
+        $encryptKey = self::generateKey(self::ENCRYPT_KEY_BYTE_LENGTH);
+        $signKey = self::generateKey(self::SIGN_KEY_BYTE_LENGTH);
 
         return new self($encryptKey, $signKey);
+    }
+
+    private static function generateKey($keyLength)
+    {
+        $cryptoStrong = false;
+
+        $key = bin2hex(
+            openssl_random_pseudo_bytes(self::ENCRYPT_KEY_BYTE_LENGTH, $cryptoStrong)
+        );
+        if (false === $cryptoStrong) {
+            throw new RuntimeException('unable to generate a cryptographically safe random number');
+        }
+
+        return $key;
     }
 
     public function getEncryptKey()
