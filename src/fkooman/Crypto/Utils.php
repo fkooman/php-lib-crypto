@@ -20,6 +20,14 @@ namespace fkooman\Crypto;
 
 class Utils
 {
+    /**
+     * Wrapper to compare two hashes in a timing safe way.
+     *
+     * @param string $safe the string we control
+     * @param string $user the string the user controls
+     *
+     * @return bool whether or not the two strings are identical
+     */
     public static function hashEquals($safe, $user)
     {
         // PHP >= 5.6.0 has "hash_equals"

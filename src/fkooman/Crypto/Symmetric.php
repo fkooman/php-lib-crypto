@@ -56,7 +56,7 @@ class Symmetric
      *
      * @param string $plainText the plain text to encrypt
      *
-     * @return the encrypted plain text
+     * @return string the encrypted plain text
      */
     public function encrypt($plainText)
     {
@@ -98,7 +98,7 @@ class Symmetric
      *
      * @param string $cipherText the cipher text to decrypt
      *
-     * @return the decrypted ciphertext
+     * @return string the decrypted ciphertext
      */
     public function decrypt($cipherText)
     {
