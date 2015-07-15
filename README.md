@@ -3,12 +3,15 @@
 
 # Introduction
 A simple symmetric encryption and decryption library using secure hashes with 
-zero configuration.
+zero configuration. It has the following goals:
+
+* Simple API;
+* Secure default settings;
+* Make it really hard to use the library in the wrong way.
 
 In the future an asymmetric (public key) class may be added.
 
 # Use Cases
-A number of use cases:
 * safely store data in a (remote) database
 * use it for authorization and access tokens in e.g. an OAuth server requiring
   no token storage database
