@@ -15,11 +15,11 @@ In the future an asymmetric (public key) class may be added.
 * safely store data in a (remote) database
 * use it for authorization and access tokens in e.g. an OAuth server requiring
   no token storage database
-* communicate securely between two parties where keys have already been 
-  exchanged in a secure way out of band
+* communicate securely between two parties where a key have already been 
+  exchanged out of band (in a secure way)
 
 # API
-The API is very simple. The constructor takes one argument, the key.
+The API is very simple. The constructor takes the Key object as an argument.
 
     public function __construct(Key $key);
     public function encrypt($plainText);
