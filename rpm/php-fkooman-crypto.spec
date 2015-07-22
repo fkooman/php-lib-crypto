@@ -51,4 +51,3 @@ cp -pr src/* ${RPM_BUILD_ROOT}%{_datadir}/php
 %changelog
 * Mon Jul 13 2015 François Kooman <fkooman@tuxed.net> - 1.0.0-1
 - initial package
-
