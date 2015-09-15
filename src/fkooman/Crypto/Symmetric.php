@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 namespace fkooman\Crypto;
 
 use fkooman\Base64\Base64Url;
@@ -127,7 +126,7 @@ class Symmetric
             self::CIPHER_METHOD,
             $this->key->getEncryptKey(),
             0,
-            hex2bin($dataContainer['i'])
+            pack('H*', $dataContainer['i'])
         );
 
         if (false === $plainText) {

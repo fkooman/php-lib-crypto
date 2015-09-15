@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 namespace fkooman\Crypto;
 
 use fkooman\Base64\Base64Url;
@@ -48,6 +47,15 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
             $c->decrypt($cipherText)
         );
 
+        $cipherData = substr(
+            $cipherText,
+            0,
+            strpos(
+                $cipherText,
+                '.'
+            )
+        );
+
         $this->assertSame(
             array(
                 'i' => '8d807ce858b42eebc2b720762fc6f57f',
@@ -57,7 +65,7 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
             ),
             Json::decode(
                 Base64Url::decode(
-                    explode('.', $cipherText)[0]
+                    $cipherData
                 ),
                 true
             )

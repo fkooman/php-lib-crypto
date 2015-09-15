@@ -16,9 +16,10 @@
     "require": {
         "ext-hash": "*",
         "ext-openssl": "*",
+        "ext-pcre": "*",
         "ext-spl": "*",
         "fkooman/base64": "^1.0",
         "fkooman/json": "^1.0",
-        "php": ">= 5.4"
+        "php": ">= 5.3.3"
     }
 }

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 namespace fkooman\Crypto;
 
 use fkooman\Base64\Base64Url;
@@ -78,12 +77,12 @@ class Key
 
     public function getEncryptKey()
     {
-        return hex2bin($this->encryptKey);
+        return pack('H*', $this->encryptKey);
     }
 
     public function getSignKey()
     {
-        return hex2bin($this->signKey);
+        return pack('H*', $this->signKey);
     }
 
     public function __toString()
@@ -111,8 +110,8 @@ class Key
             );
         }
 
-        // try to turn hex into bin
-        if (false === @hex2bin($keyValue)) {
+        // check if the string contains only hexadecimal characters
+        if (0 === preg_match('/^[0-9a-fA-F]*$/', $keyValue)) {
             throw new InvalidArgumentException(
                 sprintf('%s key MUST be a valid hex string', $keyType)
             );
