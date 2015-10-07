@@ -21,6 +21,7 @@ use fkooman\Base64\Base64Url;
 use fkooman\Json\Json;
 use InvalidArgumentException;
 use RuntimeException;
+use fkooman\IO\IO;
 
 class Symmetric
 {
@@ -33,7 +34,10 @@ class Symmetric
     /** @var Key */
     private $key;
 
-    public function __construct(Key $key)
+    /** @var \fkooman\IO\IO */
+    private $io;
+
+    public function __construct(Key $key, IO $io = null)
     {
         // make sure the requested algorithms are supported
         if (!in_array(self::CIPHER_METHOD, openssl_get_cipher_methods())) {
@@ -48,6 +52,10 @@ class Symmetric
         }
 
         $this->key = $key;
+        if (null === $io) {
+            $io = new IO();
+        }
+        $this->io = $io;
     }
 
     /**
@@ -64,9 +72,11 @@ class Symmetric
         }
 
         // generate an initialization vector
-        $iv = openssl_random_pseudo_bytes(
-            openssl_cipher_iv_length(self::CIPHER_METHOD)
+        $iv = $this->io->getRandom(
+            openssl_cipher_iv_length(self::CIPHER_METHOD),
+            true
         );
+
         // encrypt the data
         $cipherText = openssl_encrypt(
             $plainText,
@@ -78,7 +88,7 @@ class Symmetric
 
         // create a container for initialization vector and cipher text
         $dataContainer = array(
-            'i' => bin2hex($iv),
+            'i' => Base64Url::encode($iv),
             'c' => $cipherText,
             'm' => self::CIPHER_METHOD, // only informative
             'h' => self::HASH_METHOD,   // only informative
@@ -126,7 +136,7 @@ class Symmetric
             self::CIPHER_METHOD,
             $this->key->getEncryptKey(),
             0,
-            pack('H*', $dataContainer['i'])
+            Base64Url::decode($dataContainer['i'])
         );
 
         if (false === $plainText) {

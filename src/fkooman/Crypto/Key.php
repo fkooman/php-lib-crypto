@@ -20,7 +20,7 @@ namespace fkooman\Crypto;
 use fkooman\Base64\Base64Url;
 use fkooman\Json\Json;
 use InvalidArgumentException;
-use RuntimeException;
+use fkooman\IO\IO;
 
 class Key
 {
@@ -47,42 +47,38 @@ class Key
             throw new InvalidArgumentException('invalid key data');
         }
 
-        self::verifyKey('encrypt', $keyData['e'], 2 * self::ENCRYPT_KEY_BYTE_LENGTH);
-        self::verifyKey('sign', $keyData['s'], 2 * self::SIGN_KEY_BYTE_LENGTH);
+        self::verifyKey('encrypt', $keyData['e'], self::ENCRYPT_KEY_BYTE_LENGTH);
+        self::verifyKey('sign', $keyData['s'], self::SIGN_KEY_BYTE_LENGTH);
 
         return new self($keyData['e'], $keyData['s']);
     }
 
-    public static function generate()
+    public static function generate(IO $io = null)
     {
-        $encryptKey = self::generateKey(self::ENCRYPT_KEY_BYTE_LENGTH);
-        $signKey = self::generateKey(self::SIGN_KEY_BYTE_LENGTH);
+        if (null === $io) {
+            $io = new IO();
+        }
+        $encryptKey = self::generateKey($io, self::ENCRYPT_KEY_BYTE_LENGTH);
+        $signKey = self::generateKey($io, self::SIGN_KEY_BYTE_LENGTH);
 
         return new self($encryptKey, $signKey);
     }
 
-    private static function generateKey($keyLength)
+    private static function generateKey(IO $io, $keyLength)
     {
-        $cryptoStrong = false;
-
-        $key = bin2hex(
-            openssl_random_pseudo_bytes($keyLength, $cryptoStrong)
+        return Base64Url::encode(
+            $io->getRandom($keyLength, true)
         );
-        if (false === $cryptoStrong) {
-            throw new RuntimeException('unable to generate a cryptographically safe random number');
-        }
-
-        return $key;
     }
 
     public function getEncryptKey()
     {
-        return pack('H*', $this->encryptKey);
+        return Base64Url::decode($this->encryptKey);
     }
 
     public function getSignKey()
     {
-        return pack('H*', $this->signKey);
+        return Base64Url::decode($this->signKey);
     }
 
     public function __toString()
@@ -103,17 +99,17 @@ class Key
             );
         }
 
-        // hex length must be twice as long as byte length
-        if ($keyLength !== strlen($keyValue)) {
+        // check if the string contains only hexadecimal characters
+        if (0 === preg_match('/^[A-Za-z0-9-_]*$/', $keyValue)) {
             throw new InvalidArgumentException(
-                sprintf('hex representation of %s key MUST be length %d', $keyType, $keyLength)
+                sprintf('%s key MUST be a valid base64url string', $keyType)
             );
         }
 
-        // check if the string contains only hexadecimal characters
-        if (0 === preg_match('/^[0-9a-fA-F]*$/', $keyValue)) {
+        $decodedLength = strlen(Base64Url::decode($keyValue));
+        if ($keyLength !== $decodedLength) {
             throw new InvalidArgumentException(
-                sprintf('%s key MUST be a valid hex string', $keyType)
+                sprintf('%s key MUST be length %d, but has length %d', $keyType, $keyLength, $decodedLength)
             );
         }
     }

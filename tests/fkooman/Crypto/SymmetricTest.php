@@ -38,10 +38,10 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
 
     public function testDecrypt()
     {
-        $key = Key::load('eyJlIjoiZmRhMmZjOGQwMWMwZjg0NDFhODNhMzc1ODAzMWExOTkiLCJzIjoiNTNjNWU2MmRjZjZkYjM4YzNhYTgwZmUyMzVmZjY5MTI5NTdhY2YyZjI1M2ZiNTFlMjQ0NjBmZTQ4NzdmMWQ2YiJ9');
+        $key = Key::load('eyJlIjoieENVbV9FOWotdUJsSDAyOTJ4b2MxdyIsInMiOiJCNVpkVjB5WGNVWDl6dXZ0bkUzOFpTc2xvbVowb19DaUJzWF8zcWMyUExZIn0');
 
         $c = new Symmetric($key);
-        $cipherText = 'eyJpIjoiOGQ4MDdjZTg1OGI0MmVlYmMyYjcyMDc2MmZjNmY1N2YiLCJjIjoiTXNjS0l5NzlINDZYazJoNDRxcG9LUT09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.2oRxIovyTxvExPOgTR2cYxJsUacmm-1wyIO7Izg9gp8.jM0F4_3IJe4hVrj0ApJj6nO0Cou_xUkMBSxcK_3ENqA.3W4GohB-BlGIccWgeW2cQ8FZTlwiY2G0uzMBpXapPZE';
+        $cipherText = 'eyJpIjoicm14ZmhKYzVMcWRqTzhVaUV3a1ZDQSIsImMiOiIza212U2NpSU1uUEFyWlkyNXpGamlRPT0iLCJtIjoiYWVzLTEyOC1jYmMiLCJoIjoic2hhMjU2In0.oJnvVxXz8otc9zijGYFoz5P7NRGfc2_c7QhM20AnkaM';
         $this->assertSame(
             'Hello World!',
             $c->decrypt($cipherText)
@@ -58,8 +58,8 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(
             array(
-                'i' => '8d807ce858b42eebc2b720762fc6f57f',
-                'c' => 'MscKIy79H46Xk2h44qpoKQ==',
+                'i' => 'rmxfhJc5LqdjO8UiEwkVCA',
+                'c' => '3kmvSciIMnPArZY25zFjiQ==',
                 'm' => 'aes-128-cbc',
                 'h' => 'sha256',
             ),
@@ -78,7 +78,7 @@ class SymmetricTest extends PHPUnit_Framework_TestCase
      */
     public function testInvalidSignature()
     {
-        $key = Key::load('eyJlIjoiZmRhMmZjOGQwMWMwZjg0NDFhODNhMzc1ODAzMWExOTkiLCJzIjoiNTNjNWU2MmRjZjZkYjM4YzNhYTgwZmUyMzVmZjY5MTI5NTdhY2YyZjI1M2ZiNTFlMjQ0NjBmZTQ4NzdmMWQ2YiJ9');
+        $key = Key::load('eyJlIjoiTER2MXZWNnJyS3FGalB0VHdVb3NxdyIsInMiOiJMWTNVaVo1SjZvbzZYaG1ZaXRnczBBb3pTbEpoNE5sd3ZJUnZOZmFjcGFBIn0');
 
         $c = new Symmetric($key);
         $cipherText = 'eyJpIjoiMjhkZTAyNzYyMmEzMzUzMjFhYTI1OGFlZDMxMzMxMDQiLCJjIjoidmZ3Y2ZHTituSEV1c0Z6UWpuZ2JyUT09IiwibSI6ImFlcy0xMjgtY2JjIiwiaCI6InNoYTI1NiJ9.b3mCkMDCoclvSVN5dIyHc9htW6AIsD4o9z35nYamrts';
