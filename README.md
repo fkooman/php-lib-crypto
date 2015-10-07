@@ -70,9 +70,9 @@ and the encrypted plain text. The payload is a BASE64URL encoded JSON string:
         "m": "aes-128-cbc"
     }
 
-* `c` is the BASE64 encoded encrypted plain text;
+* `c` is the base64url encoded encrypted plain text;
 * `h` is the used HMAC algorithm,
-* `i` is the IV in hex format
+* `i` is the base64url encoded IV
 * `m` is the used encryption cipher. 
 
 The `h` and `m` fields are NEVER used in the decryption process, but only 
